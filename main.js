@@ -1,28 +1,21 @@
-const { app, Tray, Menu, nativeImage, BrowserWindow } = require('electron');
+const { app, Tray, Menu, nativeImage, BrowserWindow, screen } = require('electron');
 
 let tray;
 
-// function createWindow() {
-//   win = new BrowserWindow({
-//     width: 800,
-//     height: 600,
-//     show: false,
-//     frame: false,
-//     skipTaskbar: true,
-//     resizable:false,
-//     webPreferences: {
-//       nodeIntegration: true,
-//     },
-//   });
-
-//   win.loadFile('pages/homePage/index.html');
-// }
-
 app.whenReady().then(() => {
 
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
+
+console.log('Resolução da tela:', width, height*0.9);
+
+// a ser refatorado !
+
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: Math.round(width * 0.25),
+    height: Math.round(height * 0.9),
+    x: Math.round(width - (width*0.26)),
+    y: Math.round(height*0.05),
     show: true,
     frame: false,
     skipTaskbar: true,
@@ -40,8 +33,8 @@ app.whenReady().then(() => {
   const contextMenu = Menu.buildFromTemplate([
     {label: 'mini', click: ()=> {
       win.setSize(400, 400);
-      const { x, y } = tray.getBounds();
-      win.setPosition(x - 250, y - 360);
+      // const { x, y } = tray.getBounds();
+      // win.setPosition(x - 250, y - 360);
       win.show();
     }},
 
