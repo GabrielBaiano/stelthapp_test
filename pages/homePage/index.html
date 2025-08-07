@@ -1,147 +1,247 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pomodoro Timer</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Clone (Single File)</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap">
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #1e1e2f;
-      color: #fff;
-      display: flex;
-      height: 100vh;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .container {
-      background: #2d2d44;
-      padding: 40px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-      width: 300px;
-    }
-
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 20px;
-    }
-
-    #timer {
-      font-size: 3rem;
-      margin-bottom: 20px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 10px;
-      background: #444;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    .progress {
-      height: 100%;
-      width: 0%;
-      background: #61dafb;
-      transition: width 1s linear;
-    }
-
-    .buttons button {
-      margin: 0 5px;
-      padding: 10px 20px;
-      border: none;
-      background: #61dafb;
-      color: #000;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .buttons button:hover {
-      background: #21a1f1;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Pomodoro</h1>
-    <div id="timer">25:00</div>
-    <div class="progress-bar">
-      <div class="progress" id="progress"></div>
-    </div>
-    <div class="buttons">
-      <button id="start">Iniciar</button>
-      <button id="pause">Pausar</button>
-      <button id="reset">Reiniciar</button>
-    </div>
-  </div>
-
-  <script>
-    const timerDisplay = document.getElementById('timer');
-    const progress = document.getElementById('progress');
-    const startBtn = document.getElementById('start');
-    const pauseBtn = document.getElementById('pause');
-    const resetBtn = document.getElementById('reset');
-
-    const duration = 25 * 60; // 25 minutos
-    let timeLeft = duration;
-    let timer = null;
-    let isRunning = false;
-
-    function updateTimer() {
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
-      timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      
-      const percent = ((duration - timeLeft) / duration) * 100;
-      progress.style.width = `${percent}%`;
-    }
-
-    function startTimer() {
-      if (isRunning) return;
-
-      isRunning = true;
-      timer = setInterval(() => {
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          isRunning = false;
-          alert("Tempo acabou! Faça uma pausa.");
-          return;
+    <style>
+        /* Estilos Gerais e Variáveis */
+        :root {
+            --background-color: #f0f4f9;
+            --container-bg: #ffffff;
+            --primary-text: #1f1f1f;
+            --secondary-text: #5f6368;
+            --accent-color: #1a73e8;
+            --user-message-bg: #e1eefd;
+            --model-message-bg: #f1f3f4;
+            --border-color: #dadce0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        timeLeft--;
-        updateTimer();
-      }, 1000);
-    }
 
-    function pauseTimer() {
-      clearInterval(timer);
-      isRunning = false;
-    }
+        body {
+            font-family: 'Google Sans', sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--primary-text);
+        }
 
-    function resetTimer() {
-      clearInterval(timer);
-      isRunning = false;
-      timeLeft = duration;
-      updateTimer();
-      progress.style.width = "0%";
-    }
+        /* Container Principal */
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--container-bg);
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            overflow: hidden;
+        }
 
-    startBtn.addEventListener('click', startTimer);
-    pauseBtn.addEventListener('click', pauseTimer);
-    resetBtn.addEventListener('click', resetTimer);
+        /* Cabeçalho e Campo da API Key */
+        .settings-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--container-bg);
+        }
 
-    updateTimer(); // Mostrar tempo inicial
-  </script>
-</body>
+        .settings-header h1 {
+            font-size: 20px;
+            margin: 0 0 12px 0;
+            color: var(--primary-text);
+        }
+
+        .api-key-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .api-key-container label {
+            font-size: 14px;
+            color: var(--secondary-text);
+        }
+
+        #api-key {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Container do Chat */
+        .chat-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Mensagens do Chat */
+        .chat-message {
+            display: flex;
+            max-width: 85%;
+        }
+
+        .chat-message .message-content {
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .chat-message.user {
+            align-self: flex-end;
+        }
+        .chat-message.user .message-content {
+            background-color: var(--user-message-bg);
+            color: #0b57d0;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.model {
+            align-self: flex-start;
+        }
+        .chat-message.model .message-content {
+            background-color: var(--model-message-bg);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-message .message-content p {
+            margin: 0;
+        }
+
+        .loading {
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        /* Rodapé e Formulário de Envio */
+        .chat-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        #prompt-input {
+            flex-grow: 1;
+            padding: 12px 16px;
+            border: none;
+            background-color: var(--model-message-bg);
+            border-radius: 24px;
+            font-size: 16px;
+            resize: none;
+            max-height: 100px;
+            overflow-y: auto;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+        #prompt-input:focus {
+            outline: none;
+        }
+
+        #send-button {
+            background-color: transparent;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #send-button:hover {
+            background-color: var(--model-message-bg);
+        }
+        #send-button svg {
+            color: var(--secondary-text);
+        }
+        #send-button:disabled svg {
+            color: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: var(--secondary-text);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            body {
+                align-items: flex-start;
+            }
+            .main-container {
+                border-radius: 0;
+                max-width: 100%;
+                height: 100vh;
+            }
+            .settings-header, .chat-container, .chat-footer {
+                padding: 12px;
+            }
+            .api-key-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            #api-key {
+                width: 100%;
+                box-sizing: border-box; /* Garante que padding não afete a largura total */
+            }
+        }
+    </style>
+    </head>
+<body>
+
+    <div class="main-container">
+        
+        <header class="settings-header">
+            <h1>Gemini Clone</h1>
+            <div class="api-key-container">
+                <label for="api-key">Sua Google AI API Key:</label>
+                <input type="password" id="api-key" placeholder="Cole sua chave aqui">
+            </div>
+        </header>
+
+        <div class="chat-container" id="chat-container">
+            <div class="chat-message model">
+                <div class="message-content">
+                    <p>Olá! Para começar, por favor, insira sua Google AI API Key no campo acima e depois me envie uma mensagem.</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="chat-footer">
+            <form id="chat-form" class="chat-form">
+                <textarea id="prompt-input" placeholder="Digite sua mensagem..." required></textarea>
+                <button type="submit" id="send-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+            <p class="disclaimer">As informações podem ser imprecisas. Verifique fatos importantes.</p>
+        </footer>
+
+    </div>
+
+    <script src="scripts/geminiChat.js"></script>
+    </body>
 </html>

@@ -4,7 +4,7 @@ let tray;
 
 app.whenReady().then(() => {
 
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
 
 console.log('Resolução da tela:', width, height*0.9);
