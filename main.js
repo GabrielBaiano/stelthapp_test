@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-const { app, Tray, Menu, nativeImage, BrowserWindow, screen } = require('electron');
-=======
 import { app, Tray, Menu, nativeImage, BrowserWindow, screen } from 'electron';
->>>>>>> Inicial-tests
 
 let tray;
 
 app.whenReady().then(() => {
 
-<<<<<<< HEAD
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-=======
 const { width, height } = screen.getPrimaryDisplay().workAreaSize;
->>>>>>> Inicial-tests
 
 
 console.log('Resolução da tela:', width, height*0.9);
