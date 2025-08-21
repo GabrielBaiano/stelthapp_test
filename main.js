@@ -1,4 +1,4 @@
-const { app, Tray, Menu, nativeImage, BrowserWindow, screen } = require('electron');
+import { app, Tray, Menu, nativeImage, BrowserWindow, screen } from 'electron';
 
 let tray;
 
