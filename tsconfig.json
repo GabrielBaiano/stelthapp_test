@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    /* ----- Onde encontrar os arquivos ----- */
+    "rootDir": "./src",
+
+    /* ----- Como o código será gerado ----- */
+    "outDir": "./dist",
+    "target": "ES6",
+    "module": "commonjs",
+
+    /* ----- Convivência com JavaScript ----- */
+    "allowJs": true,   // <-- A MÁGICA ACONTECE AQUI
+    "checkJs": false,  // <-- Recomendado para não checar JS puro
+
+    /* ----- Regras e Qualidade do Código ----- */
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "src/**/*" // Continua incluindo tudo da pasta src
+  ]
+}

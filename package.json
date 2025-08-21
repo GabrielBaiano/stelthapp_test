@@ -2,10 +2,11 @@
   "name": "stelthapp_test",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "dist/main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc && npm run copy-assets",
+    "copy-assets": "copyfiles -u 1 src/assets/**/* src/pages/**/*.html dist"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,10 @@
   },
   "homepage": "https://github.com/GabrielBaiano/stelthapp_test#readme",
   "devDependencies": {
-    "electron": "^37.2.5"
+    "@types/node": "^20.14.9",
+    "copyfiles": "^2.4.1",
+    "electron": "^31.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2"
   }
 }
