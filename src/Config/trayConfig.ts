@@ -1,44 +1,65 @@
-import { Tray, Menu, nativeImage, app, BrowserWindow } from 'electron';
-import path from 'path';
+import { Menu, Tray, BrowserWindow, nativeImage, app } from "electron";
+import path from "path";
+
+let scriptActive = false;
 
 export function createTray(win: BrowserWindow, configWin: BrowserWindow): Tray {
-  // Garante que o caminho para o ícone esteja correto
-  const iconPath = path.join(app.getAppPath(), 'assets/icons/icon.jpg');
-  const icon = nativeImage.createFromPath(iconPath);
+  const icon = nativeImage.createFromPath(
+    path.join(__dirname, "../assets/icons/icon.jpg")
+  );
   const tray = new Tray(icon);
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Mini',
+      label: "Minimizar/Restaurar",
       click: () => {
-        win.setSize(400, 400);
-        win.show();
-      }
+        if (win.isMinimized()) {
+          win.restore();
+          win.focus();
+        } else {
+          win.minimize();
+        }
+      },
     },
     {
-      label: 'Show/Hide',
+      label: "Configurações",
       click: () => {
-        win.isVisible() ? win.hide() : win.show();
-      }
-    },
-    {
-      label: 'Configurações',
-      click: () => {
-        configWin.loadFile(path.join(app.getAppPath(), 'pages/configPage/config.html'));
+        configWin.loadFile(
+          path.join(__dirname, "../pages/configPage/config.html")
+        );
         configWin.show();
-      }
+      },
     },
-    { type: 'separator' }, // Adiciona uma linha de separação
     {
-      label: 'Fechar',
+      label: scriptActive ? "Script: Ativo ✅" : "Script: Inativo ❌",
+      enabled: false // só mostra status, não é clicável
+    },
+    {
+      type: "separator",
+    },
+    {
+      label: "Fechar Tudo",
       click: () => {
+        tray.destroy();
         app.quit();
-      }
-    }
+      },
+    },
   ]);
 
-  tray.setToolTip('StelthApp Test'); // Texto que aparece ao passar o mouse sobre o ícone
   tray.setContextMenu(contextMenu);
+
+  // Test stelf true or false
+  function updateScriptStatus(active: boolean) {
+    scriptActive = active;
+    const items = contextMenu.items;
+    const statusItem = items.find(item => item.label.startsWith("Script:"));
+    if (statusItem) {
+      statusItem.label = active ? "Script: Ativo ✅" : "Script: Inativo ❌";
+    }
+    tray.setContextMenu(contextMenu); // atualiza menu
+  }
+
+  (tray as any).updateScriptStatus = updateScriptStatus;
 
   return tray;
 }
