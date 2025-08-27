@@ -1,8 +1,8 @@
 import { BrowserWindowConstructorOptions, screen } from 'electron';
+import path from 'path'; // <-- ADICIONEI A IMPORTAÇÃO DO PATH
 
 // Transformamos a configuração da janela principal em uma FUNÇÃO
 export function createMainWindowOptions(): BrowserWindowConstructorOptions {
-  // Agora, esta linha só será executada quando a função for CHAMADA
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
   return {
@@ -15,19 +15,25 @@ export function createMainWindowOptions(): BrowserWindowConstructorOptions {
     skipTaskbar: true,
     resizable: false,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      // --- MUDANÇAS IMPORTANTES ABAIXO ---
+      // 1. Apontamos para o script de preload que criamos.
+      preload: path.join(__dirname, '../preload.js'),
+      // 2. Habilitamos o isolamento de contexto (ESSENCIAL para segurança).
+      contextIsolation: true,
+      // 3. Desabilitamos a integração direta com Node.js no renderer.
+      nodeIntegration: false,
     },
   };
 }
 
-// A janela de config não usa o 'screen', então pode continuar como uma constante
 export const configWindowOptions: BrowserWindowConstructorOptions = {
   width: 800,
   height: 600,
   show: false,
   webPreferences: {
-    nodeIntegration: true,
-    contextIsolation: false
+    // --- MUDANÇAS IMPORTANTES APLICADAS AQUI TAMBÉM ---
+    preload: path.join(__dirname, '../preload.js'),
+    contextIsolation: true,
+    nodeIntegration: false,
   },
 };

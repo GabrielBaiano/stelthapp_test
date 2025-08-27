@@ -1,0 +1,39 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(..)", "..\..", "{36257327-00FE-FF6D-A8D9-AFEE3537DAF0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(node_modules)", "..\..\node_modules", "{B8E12FB6-65FD-317F-9E70-C974309CC87E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(node-addon-api)", "..\..\node_modules\node-addon-api", "{79BC6D59-22CA-17A7-C8BA-5CA4F2911E6D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nothing", "..\node_modules\node-addon-api\nothing.vcxproj", "{143F8F0A-A930-5229-8972-18847E30D6E8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "affinity_addon", "affinity_addon.vcxproj", "{022231B1-4802-43C3-EED2-1B752F2769DB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{143F8F0A-A930-5229-8972-18847E30D6E8} = {143F8F0A-A930-5229-8972-18847E30D6E8}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|x64 = Release|x64
+		Debug|x64 = Debug|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{022231B1-4802-43C3-EED2-1B752F2769DB}.Release|x64.ActiveCfg = Release|x64
+		{022231B1-4802-43C3-EED2-1B752F2769DB}.Release|x64.Build.0 = Release|x64
+		{022231B1-4802-43C3-EED2-1B752F2769DB}.Debug|x64.ActiveCfg = Debug|x64
+		{022231B1-4802-43C3-EED2-1B752F2769DB}.Debug|x64.Build.0 = Debug|x64
+		{143F8F0A-A930-5229-8972-18847E30D6E8}.Release|x64.ActiveCfg = Release|x64
+		{143F8F0A-A930-5229-8972-18847E30D6E8}.Release|x64.Build.0 = Release|x64
+		{143F8F0A-A930-5229-8972-18847E30D6E8}.Debug|x64.ActiveCfg = Debug|x64
+		{143F8F0A-A930-5229-8972-18847E30D6E8}.Debug|x64.Build.0 = Debug|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B8E12FB6-65FD-317F-9E70-C974309CC87E} = {36257327-00FE-FF6D-A8D9-AFEE3537DAF0}
+		{79BC6D59-22CA-17A7-C8BA-5CA4F2911E6D} = {B8E12FB6-65FD-317F-9E70-C974309CC87E}
+		{143F8F0A-A930-5229-8972-18847E30D6E8} = {79BC6D59-22CA-17A7-C8BA-5CA4F2911E6D}
+	EndGlobalSection
+EndGlobal
