@@ -21,19 +21,19 @@ export function createTray(win: BrowserWindow, configWin: BrowserWindow): Tray {
         }
       },
     },
-    {
-      label: "Configurações",
-      click: () => {
-        configWin.loadFile(
-          path.join(__dirname, "../pages/configPage/config.html")
-        );
-        configWin.show();
-      },
-    },
-    {
-      label: scriptActive ? "Script: Ativo ✅" : "Script: Inativo ❌",
-      enabled: false // só mostra status, não é clicável
-    },
+    // {
+    //   label: "Configurações",
+    //   click: () => {
+    //     configWin.loadFile(
+    //       path.join(__dirname, "../pages/configPage/config.html")
+    //     );
+    //     configWin.show();
+    //   },
+    // },
+    // {
+    //   label: scriptActive ? "Script: Ativo ✅" : "Script: Inativo ❌",
+    //   enabled: false // só mostra status, não é clicável
+    // },
     {
       type: "separator",
     },

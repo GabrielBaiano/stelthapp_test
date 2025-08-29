@@ -13,222 +13,259 @@
   <!-- Marked.js para interpretar Markdown -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-  <style>
-    :root {
-      --background-color: #f0f4f9;
-      --container-bg: #ffffff;
-      --primary-text: #1f1f1f;
-      --secondary-text: #5f6368;
-      --accent-color: #1a73e8;
-      --user-message-bg: #e1eefd;
-      --model-message-bg: #f1f3f4;
-      --border-color: #dadce0;
-      --shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+<style>
+  :root {
+    --background-color: #f0f4f9;
+    --container-bg: #ffffff;
+    --primary-text: #1f1f1f;
+    --secondary-text: #5f6368;
+    --accent-color: #1a73e8;
+    --user-message-bg: #e1eefd;
+    --model-message-bg: #f1f3f4;
+    --border-color: #dadce0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
 
+  body {
+    font-family: 'Google Sans', sans-serif;
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--primary-text);
+  }
+
+  .main-container {
+    width: 100%;
+    max-width: 800px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--container-bg);
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .settings-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--container-bg);
+  }
+
+  .settings-header h1 {
+    font-size: 20px;
+    margin: 0 0 12px 0;
+    color: var(--primary-text);
+  }
+
+  .api-key-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .api-key-container label {
+    font-size: 14px;
+    color: var(--secondary-text);
+  }
+  
+  /* NOVO: Wrapper para o input e o botão para garantir o alinhamento */
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    flex-grow: 1; 
+    align-items: center;
+  }
+
+  /* MODIFICADO: Ajuste no input para dar espaço ao botão */
+  #api-key {
+    flex-grow: 1;
+    /* O padding direito aumentado impede que o texto fique debaixo do botão */
+    padding: 8px 40px 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* NOVO: Estilo centralizado do botão de segredo */
+  #toggle-api-key {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--secondary-text);
+  }
+
+  .chat-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .chat-message {
+    display: flex;
+    max-width: 85%;
+  }
+
+  .chat-message .message-content {
+    padding: 12px 16px;
+    border-radius: 18px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-x: auto;
+  }
+
+  .chat-message.user {
+    align-self: flex-end;
+  }
+  .chat-message.user .message-content {
+    background-color: var(--user-message-bg);
+    color: #0b57d0;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-message.model {
+    align-self: flex-start;
+  }
+  .chat-message.model .message-content {
+    background-color: var(--model-message-bg);
+    border-bottom-left-radius: 4px;
+  }
+
+  .loading {
+    animation: blink 1.5s infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0.5; }
+  }
+
+  .chat-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .chat-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  #prompt-input {
+    flex-grow: 1;
+    padding: 12px 16px;
+    border: none;
+    background-color: var(--model-message-bg);
+    border-radius: 24px;
+    font-size: 16px;
+    resize: none;
+    max-height: 100px;
+    overflow-y: auto;
+    font-family: inherit;
+    line-height: 1.5;
+  }
+  #prompt-input:focus {
+    outline: none;
+  }
+
+  #send-button {
+    background-color: transparent;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #send-button:hover {
+    background-color: var(--model-message-bg);
+  }
+  #send-button svg {
+    color: var(--secondary-text);
+  }
+  #send-button:disabled svg {
+    color: var(--border-color);
+    cursor: not-allowed;
+  }
+
+  .disclaimer {
+    font-size: 12px;
+    color: var(--secondary-text);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  pre {
+    background: #282c34;
+    color: #f8f8f2;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+
+  code {
+    font-family: Consolas, monospace;
+  }
+
+  @media (max-width: 600px) {
     body {
-      font-family: 'Google Sans', sans-serif;
-      background-color: var(--background-color);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: var(--primary-text);
+      align-items: flex-start;
     }
-
     .main-container {
-      width: 100%;
-      max-width: 800px;
+      border-radius: 0;
+      max-width: 100%;
       height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background-color: var(--container-bg);
-      box-shadow: var(--shadow);
-      border-radius: 8px;
-      overflow: hidden;
     }
-
-    .settings-header {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border-color);
-      background-color: var(--container-bg);
-    }
-
-    .settings-header h1 {
-      font-size: 20px;
-      margin: 0 0 12px 0;
-      color: var(--primary-text);
-    }
-
-    .api-key-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .api-key-container label {
-      font-size: 14px;
-      color: var(--secondary-text);
-    }
-
-    #api-key {
-      flex-grow: 1;
-      padding: 8px 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      font-size: 14px;
-    }
-
-    .chat-container {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .chat-message {
-      display: flex;
-      max-width: 85%;
-    }
-
-    .chat-message .message-content {
-      padding: 12px 16px;
-      border-radius: 18px;
-      line-height: 1.5;
-      word-wrap: break-word;
-      overflow-x: auto;
-    }
-
-    .chat-message.user {
-      align-self: flex-end;
-    }
-    .chat-message.user .message-content {
-      background-color: var(--user-message-bg);
-      color: #0b57d0;
-      border-bottom-right-radius: 4px;
-    }
-
-    .chat-message.model {
-      align-self: flex-start;
-    }
-    .chat-message.model .message-content {
-      background-color: var(--model-message-bg);
-      border-bottom-left-radius: 4px;
-    }
-
-    .loading {
-      animation: blink 1.5s infinite;
-    }
-    @keyframes blink {
-      50% { opacity: 0.5; }
-    }
-
-    .chat-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .chat-form {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-
-    #prompt-input {
-      flex-grow: 1;
-      padding: 12px 16px;
-      border: none;
-      background-color: var(--model-message-bg);
-      border-radius: 24px;
-      font-size: 16px;
-      resize: none;
-      max-height: 100px;
-      overflow-y: auto;
-      font-family: inherit;
-      line-height: 1.5;
-    }
-    #prompt-input:focus {
-      outline: none;
-    }
-
-    #send-button {
-      background-color: transparent;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #send-button:hover {
-      background-color: var(--model-message-bg);
-    }
-    #send-button svg {
-      color: var(--secondary-text);
-    }
-    #send-button:disabled svg {
-      color: var(--border-color);
-      cursor: not-allowed;
-    }
-
-    .disclaimer {
-      font-size: 12px;
-      color: var(--secondary-text);
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    pre {
-      background: #282c34;
-      color: #f8f8f2;
+    .settings-header, .chat-container, .chat-footer {
       padding: 12px;
-      border-radius: 8px;
-      overflow-x: auto;
     }
-
-    code {
-      font-family: Consolas, monospace;
+    .api-key-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
     }
-
-    @media (max-width: 600px) {
-      body {
-        align-items: flex-start;
-      }
-      .main-container {
-        border-radius: 0;
-        max-width: 100%;
-        height: 100vh;
-      }
-      .settings-header, .chat-container, .chat-footer {
-        padding: 12px;
-      }
-      .api-key-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-      }
-      #api-key {
-        width: 100%;
-        box-sizing: border-box;
-      }
+    /* MODIFICADO: Garante que o input e o wrapper ocupem 100% da largura em telas pequenas */
+    #api-key, .input-wrapper {
+      width: 100%;
+      box-sizing: border-box;
     }
-  </style>
+  }
+</style>
 </head>
 <body>
 
   <div class="main-container">
-    <header class="settings-header">
+<header class="settings-header">
+  <div class="header-top">
       <h1>Gemini Clone</h1>
-      <div class="api-key-container">
-        <label for="api-key">Sua Google AI API Key:</label>
-        <input type="password" id="api-key" placeholder="Cole sua chave aqui">
       </div>
-    </header>
+  <div class="api-key-container">
+    <label for="api-key">Sua Google AI API Key:</label>
+    <div class="input-wrapper">
+      <input type="password" id="api-key" placeholder="Cole sua chave aqui">
+      <button id="toggle-api-key" title="Mostrar/Ocultar chave">
+        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <svg class="eye-off-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+      </button>
+    </div>
+  </div>
+</header>
 
     <div class="chat-container" id="chat-container">
       <div class="chat-message model">
