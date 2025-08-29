@@ -1,19 +1,21 @@
 {
-  "name": "stelthapp_test",
+  "name": "stelthapp-test",
   "version": "1.0.0",
-  "description": "",
+  "description": "a good app!",
   "main": "dist/main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "npm run build && electron .",
     "build": "tsc && npm run copy-assets",
-    "copy-assets": "copyfiles -u 1 src/assets/**/* src/pages/**/*.html dist"
+    "copy-assets": "copyfiles -u 1 src/assets/**/* src/pages/**/*.html dist",
+    "package": "npm run build && electron-builder",
+    "publish": "npm run build && electron-builder --publish always"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GabrielBaiano/stelthapp_test.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Gabriel Baiano",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/GabrielBaiano/stelthapp_test/issues"
@@ -23,10 +25,34 @@
     "@types/node": "^20.14.9",
     "copyfiles": "^2.4.1",
     "electron": "^31.2.1",
+    "electron-builder": "^26.0.12",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.2"
   },
   "dependencies": {
     "node-addon-api": "^8.5.0"
+  },
+  "build": {
+    "appId": "com.gabrielbaiano.stelthapp",
+    "productName": "StelthApp",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "dist/assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "dist/assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "dist/assets/icon.png"
+    }
   }
 }
