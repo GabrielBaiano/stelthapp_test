@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/src/assets/icon.png" alt="StelthApp Logo" width="200"/>
+  <img src="/src/assets/icon.jpg" alt="StelthApp Logo" width="200"/>
 </p>
 
 <h1 align="center">StelthApp</h1>
