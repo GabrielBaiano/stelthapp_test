@@ -5,7 +5,7 @@
 <h1 align="center">StelthApp</h1>
 
 <p align="center">
-  <a href="README.en.md" target="_blank">English</a>
+  <a href="/READMEen.md" target="_blank">English</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="https://github.com/GabrielBaiano/stelthapp_test/issues/new?title=Sugestão%20ou%20Bug%20no%20StelthApp&body=**Descreva%20sua%20ideia%20ou%20o%20problema%20aqui:**%0A%0A%0A**Passos%20para%20reproduzir%20(se%20for%20um%20bug):**%0A1.%20...%0A2.%20...%0A%0A**Qualquer%20outra%20informação%20relevante?**%0A" target="_blank">Reportar Bug / Sugestão</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
