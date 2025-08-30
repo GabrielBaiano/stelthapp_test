@@ -6,27 +6,18 @@ import { createTray } from './Config/trayConfig';
 // ===================================================================
 // Lógica de Caminho Inteligente para o Addon Nativo
 // ===================================================================
-
-// 1. Detecta se o app está rodando em modo de desenvolvimento ou empacotado
 const isDev = !app.isPackaged;
-
-// 2. Define o caminho correto para o addon baseado no ambiente
 const addonPath = isDev
-  // Se estiver em desenvolvimento, usa o caminho relativo a partir do código-fonte
   ? path.join(__dirname, '..', 'hideWindow', 'build', 'Release', 'affinity_addon.node')
-  // Se estiver instalado, busca o addon na pasta de recursos do app
   : path.join(process.resourcesPath, 'app', 'affinity_addon.node');
 
-// 3. Carrega o addon usando o caminho correto
 let affinityAddon;
 try {
   affinityAddon = require(addonPath);
 } catch (error) {
   console.error('Falha ao carregar o addon nativo:', error);
-  // Em caso de falha, podemos criar um objeto falso para evitar que o resto do app quebre
   affinityAddon = { setWindowDisplayAffinity: () => false };
 }
-
 
 const applyProtection = (win: BrowserWindow) => {
   try {
@@ -52,6 +43,8 @@ function createWindows() {
   win.loadFile(path.join(__dirname, './pages/homePage/index.html'));
 
   const configWin = new BrowserWindow(configWindowOptions);
+  // Você precisará criar e carregar um arquivo para a janela de config
+  // configWin.loadFile(path.join(__dirname, '../pages/configPage/config.html'));
 
   win.on('ready-to-show', () => applyProtection(win));
   configWin.on('ready-to-show', () => applyProtection(configWin));
@@ -65,24 +58,21 @@ function createWindows() {
   
   // Atalhos Globais
   globalShortcut.register('CommandOrControl+M', () => {
-    const windows = [win, configWin];
-    windows.forEach(w => {
-      if (w && !w.isDestroyed()) {
-        w.isMinimized() ? w.restore() : w.minimize();
-      }
-    });
+    // MODIFICADO: Ação aplicada apenas à janela principal 'win'
+    if (win && !win.isDestroyed()) {
+      win.isMinimized() ? win.restore() : win.minimize();
+    }
   });
 
   globalShortcut.register('CommandOrControl+T', () => {
-    const isAlwaysOnTop = win.isAlwaysOnTop();
-    const windows = [win, configWin];
-    windows.forEach(w => {
-      if (w && !w.isDestroyed()) {
-        w.setAlwaysOnTop(!isAlwaysOnTop);
-      }
-    });
+    // MODIFICADO: Ação aplicada apenas à janela principal 'win'
+    if (win && !win.isDestroyed()) {
+      const isAlwaysOnTop = win.isAlwaysOnTop();
+      win.setAlwaysOnTop(!isAlwaysOnTop);
+    }
   });
 
+  // Este atalho já afeta apenas a janela principal, não precisa de alteração.
   globalShortcut.register('CommandOrControl+F', () => {
     if (win && !win.isDestroyed() && win.isVisible()) {
       win.focus();
