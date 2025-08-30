@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/node": "^20.14.9",
     "copyfiles": "^2.4.1",
-    "electron": "^31.2.1",
+    "electron": "^31.7.7",
     "electron-builder": "^26.0.12",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.2"
@@ -46,13 +46,11 @@
       "target": "nsis",
       "icon": "dist/assets/icon.ico"
     },
-    "mac": {
-      "target": "dmg",
-      "icon": "dist/assets/icon.icns"
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "dist/assets/icon.png"
-    }
+    "extraResources": [
+      {
+        "from": "hideWindow/build/Release/affinity_addon.node",
+        "to": "app/affinity_addon.node"
+      }
+    ]
   }
 }
