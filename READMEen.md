@@ -42,6 +42,7 @@ Installation is simple and straightforward.
 2.  Download the latest installer for your operating system (e.g., `StelthApp-Setup-X.X.X.exe` for Windows).
 3.  Run the installer.
     * **Note for Windows users:** SmartScreen might show a warning for an "Unknown Publisher." This is normal. Click on "More info" and then "Run anyway."
+4.  Get your API KEY on **[aistudio google](https://aistudio.google.com/)**.
 
 ## 💻 For Developers
 

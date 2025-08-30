@@ -42,6 +42,7 @@ A instalação é simples e direta.
 2.  Baixe o instalador mais recente para o seu sistema operacional (ex: `StelthApp-Setup-X.X.X.exe` para Windows).
 3.  Execute o instalador.
     * **Observação para Windows:** O SmartScreen pode exibir um aviso de "Editor Desconhecido". Isso é normal. Clique em "Mais informações" e depois em "Executar assim mesmo".
+4.  Entre em **[aistudio google](https://aistudio.google.com/)** para pegar sua API key.
 
 ## 💻 Para Desenvolvedores
 
