@@ -1,7 +1,7 @@
 {
   "name": "stelthapp-test",
   "version": "1.0.0",
-  "description": "a good app!",
+  "description": "A good app!",
   "main": "dist/main.js",
   "scripts": {
     "start": "npm run build && electron .",
@@ -49,7 +49,7 @@
     "extraResources": [
       {
         "from": "hideWindow/build/Release/affinity_addon.node",
-        "to": "app/affinity_addon.node"
+        "to": "affinity_addon.node"
       }
     ]
   }

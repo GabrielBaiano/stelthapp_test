@@ -1,4 +1,5 @@
 import { Menu, Tray, BrowserWindow, nativeImage, app } from "electron";
+import { unregisterShortcuts } from "./shortcutConfig";
 import path from "path";
 
 let scriptActive = false;
@@ -41,6 +42,8 @@ export function createTray(win: BrowserWindow, configWin: BrowserWindow): Tray {
       label: "Fechar Tudo",
       click: () => {
         tray.destroy();
+        BrowserWindow.getAllWindows().forEach(w => w.destroy());
+        unregisterShortcuts();
         app.quit();
       },
     },
