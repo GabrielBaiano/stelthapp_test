@@ -15,12 +15,8 @@ export function createMainWindowOptions(): BrowserWindowConstructorOptions {
     skipTaskbar: true,
     resizable: false,
     webPreferences: {
-      // --- MUDANÇAS IMPORTANTES ABAIXO ---
-      // 1. Apontamos para o script de preload que criamos.
-      preload: path.join(__dirname, '../preload.js'),
-      // 2. Habilitamos o isolamento de contexto (ESSENCIAL para segurança).
+      preload: path.join(__dirname, './preload.js'),
       contextIsolation: true,
-      // 3. Desabilitamos a integração direta com Node.js no renderer.
       nodeIntegration: false,
     },
   };
