@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Criador de Ícones</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 20px; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .controls > div {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    #preview {
+      border-radius: 25%;
+      background: #4CAF50;
+      width: 256px;
+      height: 256px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    #preview img {
+      max-width: 100%;
+      max-height: 100%;
+      position: absolute;
+      cursor: move;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #2196f3;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+    .preview-sizes {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      justify-content: center;
+    }
+    .preview-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+    }
+    .preview-item canvas {
+      border-radius: 25%;
+      margin-bottom: 5px;
+      background: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Criador de Ícones</h1>
+
+  <div class="controls">
+    <div>
+      <label><input type="radio" name="bgType" value="solid" checked> Cor sólida</label><br>
+      <label><input type="radio" name="bgType" value="gradient"> Gradiente</label>
+    </div>
+    <div>
+      <label>Cor 1: <input type="color" id="color1" value="#4CAF50"></label><br>
+      <label>Cor 2: <input type="color" id="color2" value="#81C784"></label>
+    </div>
+    <div>
+      <label>Upload da imagem: <input type="file" id="imageUpload" accept="image/*"></label><br>
+      <label>Tamanho: <input type="range" id="scale" min="0.1" max="2" step="0.1" value="1"></label>
+    </div>
+  </div>
+
+  <div id="preview">
+    <img id="iconImage" style="display:none;">
+  </div>
+
+  <button id="downloadBtn">Baixar Ícones</button>
+
+  <div class="preview-sizes" id="previewSizes"></div>
+
+  <canvas id="canvas" width="256" height="256" style="display:none;"></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script>
+    const preview = document.getElementById("preview");
+    const iconImage = document.getElementById("iconImage");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const previewSizesContainer = document.getElementById("previewSizes");
+
+    const sizes = [16, 24, 32, 48, 256];
+    let offsetX, offsetY, isDragging = false, imgX = 0, imgY = 0, scale = 1;
+
+    // Criar mini canvas para pré-visualização
+    const previewCanvases = {};
+    sizes.forEach(size => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "preview-item";
+      const c = document.createElement("canvas");
+      c.width = size;
+      c.height = size;
+      wrapper.appendChild(c);
+      const label = document.createElement("span");
+      label.textContent = `${size}x${size}`;
+      wrapper.appendChild(label);
+      previewSizesContainer.appendChild(wrapper);
+      previewCanvases[size] = c.getContext("2d");
+    });
+
+    // Atualizar fundo
+    function updateBackground() {
+      const type = document.querySelector("input[name='bgType']:checked").value;
+      const c1 = document.getElementById("color1").value;
+      const c2 = document.getElementById("color2").value;
+      if (type === "solid") {
+        preview.style.background = c1;
+      } else {
+        preview.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+      }
+      updatePreviews();
+    }
+
+    document.querySelectorAll("input[name='bgType'], #color1, #color2").forEach(el => {
+      el.addEventListener("input", updateBackground);
+    });
+    updateBackground();
+
+    // Upload da imagem
+    document.getElementById("imageUpload").addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        iconImage.src = evt.target.result;
+        iconImage.style.display = "block";
+        imgX = 0; imgY = 0; scale = 1;
+        iconImage.style.transform = `scale(${scale})`;
+        updatePreviews();
+      }
+      reader.readAsDataURL(file);
+    });
+
+    // Drag
+    iconImage.addEventListener("mousedown", e => {
+      isDragging = true;
+      offsetX = e.offsetX;
+      offsetY = e.offsetY;
+    });
+    document.addEventListener("mouseup", () => isDragging = false);
+    document.addEventListener("mousemove", e => {
+      if (isDragging) {
+        imgX = e.clientX - preview.getBoundingClientRect().left - offsetX;
+        imgY = e.clientY - preview.getBoundingClientRect().top - offsetY;
+        iconImage.style.left = imgX + "px";
+        iconImage.style.top = imgY + "px";
+        updatePreviews();
+      }
+    });
+
+    // Scale
+    document.getElementById("scale").addEventListener("input", e => {
+      scale = e.target.value;
+      iconImage.style.transform = `scale(${scale})`;
+      updatePreviews();
+    });
+
+    // Função para desenhar um ícone no canvas
+    function drawIcon(ctxTarget, size) {
+      ctxTarget.clearRect(0,0,size,size);
+
+      // Forma arredondada
+      ctxTarget.beginPath();
+      ctxTarget.moveTo(size*0.2,0);
+      ctxTarget.arcTo(size,0,size,size*0.2,size*0.25*size);
+      ctxTarget.arcTo(size,size,size*0.8,size,size*0.25*size);
+      ctxTarget.arcTo(0,size,0,size*0.8,size*0.25*size);
+      ctxTarget.arcTo(0,0,size*0.2,0,size*0.25*size);
+      ctxTarget.closePath();
+      ctxTarget.clip(); // aplica máscara arredondada
+
+      // Fundo
+      const type = document.querySelector("input[name='bgType']:checked").value;
+      const c1 = document.getElementById("color1").value;
+      const c2 = document.getElementById("color2").value;
+      if (type === "solid") {
+        ctxTarget.fillStyle = c1;
+      } else {
+        const grad = ctxTarget.createLinearGradient(0,0,size,size);
+        grad.addColorStop(0,c1);
+        grad.addColorStop(1,c2);
+        ctxTarget.fillStyle = grad;
+      }
+      ctxTarget.fillRect(0,0,size,size);
+
+      // Imagem
+      if (iconImage.src && iconImage.style.display !== "none") {
+        const img = new Image();
+        img.src = iconImage.src;
+        ctxTarget.save();
+        ctxTarget.translate(imgX/256*size, imgY/256*size);
+        ctxTarget.scale(scale, scale);
+        ctxTarget.drawImage(img, 0, 0, size, size);
+        ctxTarget.restore();
+      }
+    }
+
+    // Atualiza todas as pré-visualizações
+    function updatePreviews() {
+      sizes.forEach(size => {
+        drawIcon(previewCanvases[size], size);
+      });
+    }
+
+    // Geração e download
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const zip = new JSZip();
+
+      sizes.forEach(size => {
+        canvas.width = size;
+        canvas.height = size;
+        drawIcon(ctx, size);
+        const dataURL = canvas.toDataURL("image/png").split(",")[1];
+        zip.file(`icon_${size}x${size}.png`, dataURL, {base64:true});
+      });
+
+      zip.generateAsync({type:"blob"}).then(content => {
+        saveAs(content, "icons.zip");
+      });
+    });
+  </script>
+</body>
+</html>

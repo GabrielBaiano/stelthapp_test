@@ -1,35 +1,19 @@
-import { BrowserWindowConstructorOptions, screen } from 'electron';
-import path from 'path'; // <-- ADICIONEI A IMPORTAÇÃO DO PATH
+import { BrowserWindow, screen } from "electron";
 
-// Transformamos a configuração da janela principal em uma FUNÇÃO
-export function createMainWindowOptions(): BrowserWindowConstructorOptions {
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+export function createMainWindowOptions() {
+  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
 
   return {
-    width: Math.round(width * 0.25),
-    height: Math.round(height * 0.9),
-    x: Math.round(width - (width * 0.26)),
-    y: Math.round(height * 0.05),
-    show: true,
+    width: Math.round(screenWidth * 0.25),
+    height: Math.round(screenHeight * 0.9),
+    x: Math.round(screenWidth - (screenWidth * 0.26)),
+    y: Math.round(screenHeight * 0.05),
     frame: false,
     skipTaskbar: true,
     resizable: false,
     webPreferences: {
-      preload: path.join(__dirname, './preload.js'),
-      contextIsolation: true,
       nodeIntegration: false,
+      contextIsolation: true,
     },
   };
 }
-
-export const configWindowOptions: BrowserWindowConstructorOptions = {
-  width: 800,
-  height: 600,
-  show: false,
-  webPreferences: {
-    // --- MUDANÇAS IMPORTANTES APLICADAS AQUI TAMBÉM ---
-    preload: path.join(__dirname, '../preload.js'),
-    contextIsolation: true,
-    nodeIntegration: false,
-  },
-};

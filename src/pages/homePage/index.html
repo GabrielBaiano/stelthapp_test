@@ -1,291 +1,264 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gemini Clone (Markdown + Code Highlight)</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stealth Chat</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-  <!-- Highlight.js para blocos de código -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        /* --- TEMA CLARO (Padrão) --- */
+        :root {
+            --background-color: #f0f4f9;
+            --background-image: none;
+            --container-bg: #ffffff;
+            --primary-text: #1f1f1f;
+            --secondary-text: #5f6368;
+            --user-message-bg: #e1eefd;
+            --model-message-bg: #f1f3f4;
+            --border-color: #dadce0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --input-bg: var(--model-message-bg);
+            --button-hover-bg: var(--model-message-bg);
+        }
 
-  <!-- Marked.js para interpretar Markdown -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        /* --- NOVO: TEMA ESCURO --- */
+        body.dark-mode {
+            --background-color: #121212;
+            --background-image: linear-gradient(180deg, #212121 0%, #121212 100%);
+            --container-bg: #1e1e1e;
+            --primary-text: #e0e0e0;
+            --secondary-text: #8b8b8b;
+            --user-message-bg: #2a3950;
+            --model-message-bg: #333333;
+            --border-color: #3a3a3a;
+            --shadow: 0 1px 5px rgba(0,0,0,0.4);
+            --input-bg: var(--model-message-bg);
+            --button-hover-bg: #4a4a4a;
+        }
 
-<style>
-  :root {
-    --background-color: #f0f4f9;
-    --container-bg: #ffffff;
-    --primary-text: #1f1f1f;
-    --secondary-text: #5f6368;
-    --accent-color: #1a73e8;
-    --user-message-bg: #e1eefd;
-    --model-message-bg: #f1f3f4;
-    --border-color: #dadce0;
-    --shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
 
-  body {
-    font-family: 'Google Sans', sans-serif;
-    background-color: var(--background-color);
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    color: var(--primary-text);
-  }
+        body {
+            font-family: 'Google Sans', sans-serif;
+            background-color: var(--background-color);
+            background-image: var(--background-image);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--primary-text);
+            transition: background-color 0.3s ease;
+        }
 
-  .main-container {
-    width: 100%;
-    max-width: 800px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--container-bg);
-    box-shadow: var(--shadow);
-    border-radius: 8px;
-    overflow: hidden;
-  }
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--container-bg);
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
 
-  .settings-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--container-bg);
-  }
+        .settings-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--container-bg);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
 
-  .settings-header h1 {
-    font-size: 20px;
-    margin: 0 0 12px 0;
-    color: var(--primary-text);
-  }
+        /* --- NOVO: Container para alinhar título e botão de tema --- */
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
 
-  .api-key-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+        .settings-header h1 {
+            font-size: 20px;
+            margin: 0;
+            color: var(--primary-text);
+        }
 
-  .api-key-container label {
-    font-size: 14px;
-    color: var(--secondary-text);
-  }
-  
-  /* NOVO: Wrapper para o input e o botão para garantir o alinhamento */
-  .input-wrapper {
-    position: relative;
-    display: flex;
-    flex-grow: 1; 
-    align-items: center;
-  }
+        .api-key-container { display: flex; align-items: center; gap: 10px; }
+        .api-key-container label { font-size: 14px; color: var(--secondary-text); }
+        .input-wrapper { position: relative; display: flex; flex-grow: 1; align-items: center; }
+        #api-key {
+            flex-grow: 1;
+            padding: 8px 40px 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--container-bg);
+            color: var(--primary-text);
+        }
+        #toggle-api-key {
+            position: absolute; right: 5px; top: 50%;
+            transform: translateY(-50%); background: none;
+            border: none; cursor: pointer; padding: 5px; display: flex;
+            align-items: center; justify-content: center; color: var(--secondary-text);
+        }
 
-  /* MODIFICADO: Ajuste no input para dar espaço ao botão */
-  #api-key {
-    flex-grow: 1;
-    /* O padding direito aumentado impede que o texto fique debaixo do botão */
-    padding: 8px 40px 8px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-  }
+        .chat-container { flex-grow: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+        .chat-message { display: flex; max-width: 85%; }
+        .chat-message .message-content {
+            padding: 12px 16px; border-radius: 18px; line-height: 1.5;
+            word-wrap: break-word; overflow-x: auto;
+        }
+        .chat-message.user .message-content img { max-width: 100%; border-radius: 10px; margin-top: 10px; }
+        .chat-message.user { align-self: flex-end; }
+        .chat-message.user .message-content { background-color: var(--user-message-bg); color: var(--primary-text); border-bottom-right-radius: 4px; }
+        body.light-mode .chat-message.user .message-content { color: #0b57d0; } /* Cor específica para texto do user em modo claro */
+        
+        .chat-message.model { align-self: flex-start; }
+        .chat-message.model .message-content { background-color: var(--model-message-bg); border-bottom-left-radius: 4px; }
+        .loading { animation: blink 1.5s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        
+        .chat-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); transition: border-color 0.3s ease; }
+        .chat-form { display: flex; gap: 10px; align-items: flex-end; }
+        #prompt-input {
+            flex-grow: 1; padding: 12px 16px; border: none;
+            background-color: var(--input-bg);
+            border-radius: 24px; font-size: 16px; resize: none;
+            max-height: 100px; overflow-y: auto; font-family: inherit;
+            line-height: 1.5; color: var(--primary-text);
+        }
+        #prompt-input:focus { outline: none; }
+        
+        .footer-button {
+            background-color: transparent; border: none; padding: 10px; cursor: pointer;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .footer-button:hover { background-color: var(--button-hover-bg); }
+        .footer-button svg { color: var(--secondary-text); }
+        .footer-button:disabled svg { color: var(--border-color); cursor: not-allowed; }
+        
+        .image-preview-container {
+            position: relative; display: inline-block; margin-bottom: 10px; padding: 5px;
+            background-color: var(--model-message-bg); border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        .image-preview-container img { max-height: 90px; width: auto; display: block; border-radius: 8px; }
+        #remove-image-btn {
+            position: absolute; top: -5px; right: -5px; width: 20px; height: 20px;
+            background-color: rgba(0, 0, 0, 0.7); color: white; border: none; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 14px; line-height: 20px;
+        }
 
-  /* NOVO: Estilo centralizado do botão de segredo */
-  #toggle-api-key {
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--secondary-text);
-  }
+        .disclaimer { font-size: 12px; color: var(--secondary-text); text-align: center; margin-top: 10px; }
+        pre { background: #282c34; color: #f8f8f2; padding: 12px; border-radius: 8px; overflow-x: auto; }
+        code { font-family: Consolas, monospace; }
 
-  .chat-container {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+        /* --- NOVO: Estilos do botão de tema --- */
+        .theme-toggle-container {
+            display: flex;
+            align-items: center;
+        }
+        #theme-toggle {
+            display: none; /* O checkbox real fica oculto */
+        }
+        .theme-toggle-label {
+            cursor: pointer;
+            width: 50px;
+            height: 25px;
+            background-color: #a7a7a7;
+            border-radius: 25px;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+        .theme-toggle-label::after {
+            content: '☀️';
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            width: 21px;
+            height: 21px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+        #theme-toggle:checked + .theme-toggle-label {
+            background-color: #525252;
+        }
+        #theme-toggle:checked + .theme-toggle-label::after {
+            content: '🌙';
+            transform: translateX(25px);
+        }
 
-  .chat-message {
-    display: flex;
-    max-width: 85%;
-  }
-
-  .chat-message .message-content {
-    padding: 12px 16px;
-    border-radius: 18px;
-    line-height: 1.5;
-    word-wrap: break-word;
-    overflow-x: auto;
-  }
-
-  .chat-message.user {
-    align-self: flex-end;
-  }
-  .chat-message.user .message-content {
-    background-color: var(--user-message-bg);
-    color: #0b57d0;
-    border-bottom-right-radius: 4px;
-  }
-
-  .chat-message.model {
-    align-self: flex-start;
-  }
-  .chat-message.model .message-content {
-    background-color: var(--model-message-bg);
-    border-bottom-left-radius: 4px;
-  }
-
-  .loading {
-    animation: blink 1.5s infinite;
-  }
-  @keyframes blink {
-    50% { opacity: 0.5; }
-  }
-
-  .chat-footer {
-    padding: 16px 24px;
-    border-top: 1px solid var(--border-color);
-  }
-
-  .chat-form {
-    display: flex;
-    gap: 10px;
-    align-items: flex-end;
-  }
-
-  #prompt-input {
-    flex-grow: 1;
-    padding: 12px 16px;
-    border: none;
-    background-color: var(--model-message-bg);
-    border-radius: 24px;
-    font-size: 16px;
-    resize: none;
-    max-height: 100px;
-    overflow-y: auto;
-    font-family: inherit;
-    line-height: 1.5;
-  }
-  #prompt-input:focus {
-    outline: none;
-  }
-
-  #send-button {
-    background-color: transparent;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  #send-button:hover {
-    background-color: var(--model-message-bg);
-  }
-  #send-button svg {
-    color: var(--secondary-text);
-  }
-  #send-button:disabled svg {
-    color: var(--border-color);
-    cursor: not-allowed;
-  }
-
-  .disclaimer {
-    font-size: 12px;
-    color: var(--secondary-text);
-    text-align: center;
-    margin-top: 10px;
-  }
-
-  pre {
-    background: #282c34;
-    color: #f8f8f2;
-    padding: 12px;
-    border-radius: 8px;
-    overflow-x: auto;
-  }
-
-  code {
-    font-family: Consolas, monospace;
-  }
-
-  @media (max-width: 600px) {
-    body {
-      align-items: flex-start;
-    }
-    .main-container {
-      border-radius: 0;
-      max-width: 100%;
-      height: 100vh;
-    }
-    .settings-header, .chat-container, .chat-footer {
-      padding: 12px;
-    }
-    .api-key-container {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 5px;
-    }
-    /* MODIFICADO: Garante que o input e o wrapper ocupem 100% da largura em telas pequenas */
-    #api-key, .input-wrapper {
-      width: 100%;
-      box-sizing: border-box;
-    }
-  }
-</style>
+        @media (max-width: 600px) {
+            body { align-items: flex-start; }
+            .main-container { border-radius: 0; max-width: 100%; height: 100vh; }
+            .settings-header, .chat-container, .chat-footer { padding: 12px; }
+            .api-key-container { flex-direction: column; align-items: flex-start; gap: 5px; }
+            #api-key, .input-wrapper { width: 100%; box-sizing: border-box; }
+        }
+    </style>
 </head>
 <body>
 
-  <div class="main-container">
-<header class="settings-header">
-  <div class="header-top">
-      <h1>Gemini Clone</h1>
-      </div>
-  <div class="api-key-container">
-    <label for="api-key">Sua Google AI API Key:</label>
-    <div class="input-wrapper">
-      <input type="password" id="api-key" placeholder="Cole sua chave aqui">
-      <button id="toggle-api-key" title="Mostrar/Ocultar chave">
-        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        <svg class="eye-off-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-      </button>
-    </div>
-  </div>
-</header>
+    <div class="main-container">
+        <header class="settings-header">
+            <div class="header-top">
+                <h1>Stealth Chat</h1>
+                <div class="theme-toggle-container">
+                    <input type="checkbox" id="theme-toggle">
+                    <label for="theme-toggle" class="theme-toggle-label"></label>
+                </div>
+            </div>
+            <div class="api-key-container">
+                <label for="api-key">Sua Google AI API Key:</label>
+                <div class="input-wrapper">
+                    <input type="password" id="api-key" placeholder="Cole sua chave aqui">
+                    <button id="toggle-api-key" title="Mostrar/Ocultar chave">
+                        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        <svg class="eye-off-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
 
-    <div class="chat-container" id="chat-container">
-      <div class="chat-message model">
-        <div class="message-content">
-          <p>Olá! Para começar, insira sua Google AI API Key acima e me envie uma mensagem.</p>
+        <div class="chat-container" id="chat-container">
+            <div class="chat-message model">
+                <div class="message-content">
+                     <p>Olá! Para começar, insira sua Google AI API Key. Depois, anexe uma imagem, digite sua pergunta e envie. Use o botão ☀️/🌙 para mudar o tema.</p>
+                </div>
+            </div>
         </div>
-      </div>
+        
+        <footer class="chat-footer">
+            <div id="image-preview-container" class="image-preview-container" style="display: none;"></div>
+            
+            <form id="chat-form" class="chat-form">
+                <input type="file" id="image-input" accept="image/*" style="display: none;">
+                <button type="button" id="attach-button" class="footer-button" title="Anexar Imagem">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                </button>
+                <textarea id="prompt-input" placeholder="Digite sua mensagem..."></textarea>
+                <button type="submit" id="send-button" class="footer-button" title="Enviar Mensagem">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+            <p class="disclaimer">As informações podem ser imprecisas. Verifique fatos importantes.</p>
+        </footer>
     </div>
-    
-    <footer class="chat-footer">
-      <form id="chat-form" class="chat-form">
-        <textarea id="prompt-input" placeholder="Digite sua mensagem..." required></textarea>
-        <button type="submit" id="send-button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-        </button>
-      </form>
-      <p class="disclaimer">As informações podem ser imprecisas. Verifique fatos importantes.</p>
-    </footer>
-  </div>
 
-  <script src="scripts/geminiChat.js"></script>
+    <script src="scripts/geminiChat.js"></script> 
 </body>
 </html>
